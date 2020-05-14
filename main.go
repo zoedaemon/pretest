@@ -24,6 +24,8 @@ func registerHandlers() {
 	//call it with localhost:8080 (without / ) to access root endpoint
 	Host := "localhost:8080"
 	log.Print("Listening On : ", Host)
+
+	//API Listen and Serve
 	log.Panic(http.ListenAndServe(Host, nil))
 }
 
