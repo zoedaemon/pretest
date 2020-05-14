@@ -6,10 +6,13 @@ import (
 	"net/http"
 )
 
+//RequestLogFormat default format for log the request
+const RequestLogFormat = "\n\tRequest : %s \n\tPath : %s"
+
 //Root path
 func root(writer http.ResponseWriter, request *http.Request) {
 	fmt.Fprintf(writer, "API v0.1")
-	log.Printf("Request : %s \nPath : %s", request.Host, request.URL.Path)
+	log.Printf(RequestLogFormat, request.Host, request.URL.Path)
 }
 
 //RegisterHandlers register all handlers API
