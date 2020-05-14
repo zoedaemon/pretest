@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/zoedaemon/pretest/simpleapi"
+
 	"fmt"
 	"log"
 	"net/http"
@@ -18,8 +20,11 @@ func root(writer http.ResponseWriter, request *http.Request) {
 //RegisterHandlers register all handlers API
 func registerHandlers() {
 
+	SimpleAPI := simpleapi.New()
+
 	//register root path
-	http.HandleFunc("/", root)
+	//http.HandleFunc("/", root)
+	SimpleAPI.GetMethod('/', root)
 
 	//call it with localhost:8080 (without / ) to access root endpoint
 	Host := "localhost:8080"
