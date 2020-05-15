@@ -13,11 +13,16 @@ type (
 
 	//Scope SimpleAPI all attributes / field
 	Scope struct {
+		//hold server http
+		Server *http.ServeMux
+
 		//TODO: should be private attributes, but need implement setter and getter,
 		//		for moment keep it simple
-		Request    *http.Request
-		Response   http.ResponseWriter
-		CustomData interface{} //e.g. map objects of files config, database connection, redis, etc
+		Request  *http.Request
+		Response http.ResponseWriter
+
+		//e.g. map objects of files config, database connection, redis, etc
+		CustomData interface{}
 	}
 
 	//Response that should be pass from user defined function HandlerFunc
@@ -33,18 +38,19 @@ const RequestLogFormat = "\n\tHost : %s \n\tPath : %s"
 
 //New SimpleAPI
 func New() *Scope {
-	return &Scope{}
+	return &Scope{
+		Server: http.NewServeMux(),
+	}
 }
 
-/*
-GetMethod register handler for Get method
-path : endpoints path
-handler: user defined function for handling response current endpoints
-*/
+/*GetMethod register handler for Get method
+* path 	: endpoints path
+* handler	: user defined function for handling response current endpoints
+**/
 func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 
 	//handle response from http lib
-	http.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
+	s.Server.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 
 		//intercept execution for checking correct http methodd
 		if request.Method != http.MethodGet {
@@ -57,6 +63,7 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 
 			//send response to the writer
 			writer.WriteHeader(http.StatusMethodNotAllowed)
+			writer.Header().Set("Content-Type", "application/json")
 			writer.Write([]byte(Data))
 
 		} else { //no error
@@ -69,6 +76,7 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 
 			Data, _ := json.Marshal(response)
 			writer.WriteHeader(response.ResponseCode)
+			writer.Header().Set("Content-Type", "application/json")
 			writer.Write([]byte(Data))
 
 			//Print log
@@ -85,5 +93,5 @@ func (s *Scope) PostMethod(path string, h HandlerFunc) {
 
 //Serve for host (hostname/IP and port concatenate with ":")
 func (s *Scope) Serve(host string) {
-	log.Panic(http.ListenAndServe(host, nil))
+	log.Panic(http.ListenAndServe(host, s.Server))
 }
