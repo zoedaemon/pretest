@@ -48,12 +48,25 @@ func New() *Scope {
 * handler	: user defined function for handling response current endpoints
 **/
 func (s *Scope) GetMethod(path string, handler HandlerFunc) {
+	s.generalMethod(http.MethodGet, path, handler)
+}
 
+//PostMethod register handler for Post method
+func (s *Scope) PostMethod(path string, handler HandlerFunc) {
+	s.generalMethod(http.MethodPost, path, handler)
+}
+
+/*generalMethod register handler for general methods used in internal in this package
+* method	: request method to handle, e.g. http.MethodGet or http.MethodPost, etc
+* path 		: endpoints path
+* handler	: user defined function for handling response current endpoints
+**/
+func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
 	//handle response from http lib
 	s.Server.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 
 		//intercept execution for checking correct http methodd
-		if request.Method != http.MethodGet {
+		if request.Method != method {
 
 			//error response as json
 			Data, _ := json.Marshal(&Response{
@@ -84,12 +97,6 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 			log.Printf(RequestLogFormat, request.Host, request.URL.Path)
 		}
 	})
-
-}
-
-//PostMethod register handler for Get method
-func (s *Scope) PostMethod(path string, h HandlerFunc) {
-
 }
 
 //Serve for host (hostname/IP and port concatenate with ":")
