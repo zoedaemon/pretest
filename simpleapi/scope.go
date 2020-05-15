@@ -28,7 +28,7 @@ type (
 )
 
 //RequestLogFormat default format for log the request
-const RequestLogFormat = "\n\tRequest : %s \n\tPath : %s"
+const RequestLogFormat = "\n\tHost : %s \n\tPath : %s"
 
 //New SimpleAPI
 func New() *Scope {
@@ -60,7 +60,9 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 			if response.Error == nil {
 
 				//json format data
-				Data, _ := json.Marshal(response.Data)
+				MapData := map[string]interface{}{"error": nil, "data": response.Data}
+				Data, _ := json.Marshal(MapData)
+
 				//send response to the writer
 				writer.WriteHeader(http.StatusOK)
 				writer.Write([]byte(Data))
