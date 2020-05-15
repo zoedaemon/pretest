@@ -62,8 +62,9 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 			})
 
 			//send response to the writer
-			writer.WriteHeader(http.StatusMethodNotAllowed)
+
 			writer.Header().Set("Content-Type", "application/json")
+			writer.WriteHeader(http.StatusMethodNotAllowed)
 			writer.Write([]byte(Data))
 
 		} else { //no error
@@ -75,8 +76,8 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 			//if response.Error != nil {...}
 
 			Data, _ := json.Marshal(response)
-			writer.WriteHeader(response.ResponseCode)
 			writer.Header().Set("Content-Type", "application/json")
+			writer.WriteHeader(response.ResponseCode)
 			writer.Write([]byte(Data))
 
 			//Print log
