@@ -22,8 +22,9 @@ type (
 
 	//Response that should be pass from user defined function HandlerFunc
 	Response struct {
-		Error error
-		Data  interface{}
+		ResponseCode int         `json:"response-code"`
+		Error        error       `json:"error"`
+		Data         interface{} `json:"data"`
 	}
 )
 
@@ -48,27 +49,29 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 		//intercept execution for checking correct http methodd
 		if request.Method != http.MethodGet {
 
+			//error response as json
+			Data, _ := json.Marshal(&Response{
+				ResponseCode: http.StatusMethodNotAllowed,
+				Error:        &Error{Detail: "Status Method Not Allowed"},
+			})
+
+			//send response to the writer
 			writer.WriteHeader(http.StatusMethodNotAllowed)
-			writer.Write([]byte("{\"error\":\"Status Method Not Allowed\"}"))
+			writer.Write([]byte(Data))
 
 		} else { //no error
 
 			//execute user defined function
 			response := handler(*s)
 
-			//cek if no error from user defined handler
-			if response.Error == nil {
+			//you can cek error from user defined handler and do something like custom log
+			//if response.Error != nil {...}
 
-				//json format data
-				MapData := map[string]interface{}{"error": nil, "data": response.Data}
-				Data, _ := json.Marshal(MapData)
+			Data, _ := json.Marshal(response)
+			writer.WriteHeader(response.ResponseCode)
+			writer.Write([]byte(Data))
 
-				//send response to the writer
-				writer.WriteHeader(http.StatusOK)
-				writer.Write([]byte(Data))
-
-			} //else... TODO error handling
-
+			//Print log
 			log.Printf(RequestLogFormat, request.Host, request.URL.Path)
 		}
 	})
