@@ -3,12 +3,14 @@ package simplestorage
 import (
 	"errors"
 	"log"
+	"sync"
 )
 
 //Mapper hold data map with key is string and data is general interface
 type Mapper struct {
 	data       map[string]interface{}
 	IsPrintLog bool
+	lock       sync.RWMutex
 }
 
 //NewMapper instance
@@ -24,7 +26,12 @@ func (m *Mapper) Put(key string, data interface{}) error {
 	if len(key) <= 0 {
 		return errors.New("invalid key")
 	}
+
+	//need lock for concurrency; CONCERN: try use go channel
+	m.lock.Lock()
 	m.data[key] = data
+	m.lock.Unlock()
+
 	return nil
 }
 
