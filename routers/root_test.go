@@ -9,9 +9,9 @@ import (
 )
 
 func TestRoot(t *testing.T) {
-	Host := "localhost:8080"
+
 	//call your router init with SimpleAPI
-	api := RegisterHandlers(Host)
+	api := RegisterHandlers()
 
 	//create test server
 	server := httptest.NewServer(api.Server)

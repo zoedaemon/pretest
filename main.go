@@ -13,7 +13,7 @@ func main() {
 	Host := "localhost:8080"
 
 	//Create simple API
-	SimpleAPI := routers.RegisterHandlers(Host)
+	SimpleAPI := routers.RegisterHandlers()
 
 	//API Listen and Serve
 	SimpleAPI.Serve(Host)

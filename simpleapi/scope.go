@@ -32,7 +32,7 @@ type (
 )
 
 //RequestLogFormat default format for log the request
-const RequestLogFormat = "\n\tHost : %s \n\tPath : %s"
+const RequestLogFormat = "\n\tHost : %s \n\tPath : %s\n\tResponse: %s"
 
 //New SimpleAPI
 func New() *Scope {
@@ -46,7 +46,7 @@ func New() *Scope {
 * handler	: user defined function for handling response current endpoints
 **/
 func (s *Scope) GetMethod(path string, handler HandlerFunc) {
-	s.generalMethod(http.MethodGet, path, handler)
+	generalMethod(s, http.MethodGet, path, handler)
 }
 
 /*PostMethod register handler for Post method
@@ -54,7 +54,7 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 * handler	: user defined function for handling response current endpoints
 **/
 func (s *Scope) PostMethod(path string, handler HandlerFunc) {
-	s.generalMethod(http.MethodPost, path, handler)
+	generalMethod(s, http.MethodPost, path, handler)
 }
 
 /*generalMethod register handler for general methods used in internal in this package
@@ -62,7 +62,7 @@ func (s *Scope) PostMethod(path string, handler HandlerFunc) {
 * path 		: endpoints path
 * handler	: user defined function for handling response current endpoints
 **/
-func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
+func generalMethod(s *Scope, method string, path string, handler HandlerFunc) {
 	//handle response from http lib
 	s.Server.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 
@@ -95,7 +95,7 @@ func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
 			writer.Write([]byte(Data))
 
 			//Print log
-			log.Printf(RequestLogFormat, request.Host, request.URL.Path)
+			log.Printf(RequestLogFormat, request.Host, request.URL.Path, Data)
 		}
 	})
 }
