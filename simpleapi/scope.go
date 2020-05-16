@@ -16,10 +16,8 @@ type (
 		//hold server http
 		Server *http.ServeMux
 
-		//TODO: should be private attributes, but need implement setter and getter,
-		//		for moment keep it simple
-		Request  *http.Request
-		Response http.ResponseWriter
+		//derivate Context Class
+		Context
 
 		//e.g. map objects of files config, database connection, redis, etc
 		CustomData interface{}
@@ -51,7 +49,10 @@ func (s *Scope) GetMethod(path string, handler HandlerFunc) {
 	s.generalMethod(http.MethodGet, path, handler)
 }
 
-//PostMethod register handler for Post method
+/*PostMethod register handler for Post method
+* path 	: endpoints path
+* handler	: user defined function for handling response current endpoints
+**/
 func (s *Scope) PostMethod(path string, handler HandlerFunc) {
 	s.generalMethod(http.MethodPost, path, handler)
 }
@@ -75,13 +76,13 @@ func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
 			})
 
 			//send response to the writer
-
 			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(http.StatusMethodNotAllowed)
 			writer.Write([]byte(Data))
 
 		} else { //no error
 
+			s.SetContext(writer, request)
 			//execute user defined function
 			response := handler(*s)
 
@@ -99,7 +100,9 @@ func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
 	})
 }
 
-//Serve for host (hostname/IP and port concatenate with ":")
+/*Serve for host (hostname/IP and port concatenate with ":")
+* host 	: define your host for example localhost:8080
+**/
 func (s *Scope) Serve(host string) {
 	log.Panic(http.ListenAndServe(host, s.Server))
 }
