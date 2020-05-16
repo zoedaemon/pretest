@@ -1,4 +1,4 @@
-package tests
+package routers
 
 import (
 	"net/http"
@@ -6,16 +6,12 @@ import (
 	"testing"
 
 	"github.com/gavv/httpexpect"
-	"github.com/zoedaemon/pretest/routers"
 )
 
-func TestGetRoot(t *testing.T) {
-
-	//TODO: init in tests package
-	Host := "localhost:8080"
+func TestRoot(t *testing.T) {
 
 	//call your router init with SimpleAPI
-	api := routers.RegisterHandlers(Host)
+	api := RegisterHandlers()
 
 	//create test server
 	server := httptest.NewServer(api.Server)

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/zoedaemon/pretest/routers"
+	"github.com/zoedaemon/pretest/simplestorage"
 )
 
 func main() {
@@ -13,7 +14,13 @@ func main() {
 	Host := "localhost:8080"
 
 	//Create simple API
-	SimpleAPI := routers.RegisterHandlers(Host)
+	SimpleAPI := routers.RegisterHandlers()
+
+	//new simplestorage.Mapper
+	DataMap := simplestorage.NewMapper()
+
+	//save it to SimpleAPI so accessible from every handler
+	SimpleAPI.SetCustomData(DataMap)
 
 	//API Listen and Serve
 	SimpleAPI.Serve(Host)

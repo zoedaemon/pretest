@@ -16,13 +16,11 @@ type (
 		//hold server http
 		Server *http.ServeMux
 
-		//TODO: should be private attributes, but need implement setter and getter,
-		//		for moment keep it simple
-		Request  *http.Request
-		Response http.ResponseWriter
+		//derivate Context Class
+		Context
 
 		//e.g. map objects of files config, database connection, redis, etc
-		CustomData interface{}
+		customData interface{}
 	}
 
 	//Response that should be pass from user defined function HandlerFunc
@@ -34,7 +32,7 @@ type (
 )
 
 //RequestLogFormat default format for log the request
-const RequestLogFormat = "\n\tHost : %s \n\tPath : %s"
+const RequestLogFormat = "\n\tHost : %s \n\tPath : %s\n\tResponse: %s"
 
 //New SimpleAPI
 func New() *Scope {
@@ -48,12 +46,15 @@ func New() *Scope {
 * handler	: user defined function for handling response current endpoints
 **/
 func (s *Scope) GetMethod(path string, handler HandlerFunc) {
-	s.generalMethod(http.MethodGet, path, handler)
+	generalMethod(s, http.MethodGet, path, handler)
 }
 
-//PostMethod register handler for Post method
+/*PostMethod register handler for Post method
+* path 	: endpoints path
+* handler	: user defined function for handling response current endpoints
+**/
 func (s *Scope) PostMethod(path string, handler HandlerFunc) {
-	s.generalMethod(http.MethodPost, path, handler)
+	generalMethod(s, http.MethodPost, path, handler)
 }
 
 /*generalMethod register handler for general methods used in internal in this package
@@ -61,7 +62,7 @@ func (s *Scope) PostMethod(path string, handler HandlerFunc) {
 * path 		: endpoints path
 * handler	: user defined function for handling response current endpoints
 **/
-func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
+func generalMethod(s *Scope, method string, path string, handler HandlerFunc) {
 	//handle response from http lib
 	s.Server.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 
@@ -75,13 +76,13 @@ func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
 			})
 
 			//send response to the writer
-
 			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(http.StatusMethodNotAllowed)
 			writer.Write([]byte(Data))
 
 		} else { //no error
 
+			s.SetContext(writer, request)
 			//execute user defined function
 			response := handler(*s)
 
@@ -94,12 +95,27 @@ func (s *Scope) generalMethod(method string, path string, handler HandlerFunc) {
 			writer.Write([]byte(Data))
 
 			//Print log
-			log.Printf(RequestLogFormat, request.Host, request.URL.Path)
+			log.Printf(RequestLogFormat, request.Host, request.URL.Path, Data)
 		}
 	})
 }
 
-//Serve for host (hostname/IP and port concatenate with ":")
+/*Serve for host (hostname/IP and port concatenate with ":")
+* host 	: define your host for example localhost:8080
+**/
 func (s *Scope) Serve(host string) {
 	log.Panic(http.ListenAndServe(host, s.Server))
+}
+
+/*SetCustomData for user defined data that can be accessed from any handler
+	that defined with GetMethod and PostMethod
+* host 	: define your host for example localhost:8080
+**/
+func (s *Scope) SetCustomData(data interface{}) {
+	s.customData = data
+}
+
+//GetCustomData get user defined data
+func (s *Scope) GetCustomData() interface{} {
+	return s.customData
 }
