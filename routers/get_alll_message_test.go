@@ -34,6 +34,12 @@ func TestGetAllMessage(t *testing.T) {
 	const sendMessageEndpoint = "/messages/send"
 	const getAllMessageEndpoint = "/messages"
 
+	////test no content coz no message sent in yet
+	conn.GET(getAllMessageEndpoint).
+		Expect().
+		Status(http.StatusNoContent)
+
+	////Test simulate sent 3 message
 	//send 3 message
 	for i := 0; i < 3; i++ {
 		payload := map[string]interface{}{

@@ -17,6 +17,14 @@ func GetAllMessage(scope simpleapi.Scope) *simpleapi.Response {
 	CData := scope.GetCustomData().(*simplestorage.Mapper)
 	DataMaps := CData.GetRefData()
 
+	if len(*DataMaps) == 0 {
+		//do not necessarilly send data or error detail...
+		//...coz 204 not showing any data response in browser or Postman
+		return &simpleapi.Response{
+			ResponseCode: http.StatusNoContent,
+		}
+	}
+
 	for key, val := range *DataMaps {
 		singleData := Data{}
 		singleData.ID = key
