@@ -18,5 +18,7 @@ func RegisterHandlers() (SimpleAPI *simpleapi.Scope) {
 	//		i.e.  /messages/get?key={id} not /messages/get/{id}
 	SimpleAPI.GetMethod("/messages/get", GetMessage)
 
+	SimpleAPI.GetMethod("/messages", GetAllMessage)
+
 	return SimpleAPI
 }

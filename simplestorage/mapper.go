@@ -58,3 +58,8 @@ func (m *Mapper) Get(key string) interface{} {
 func (m *Mapper) PrintData() {
 	fmt.Printf("data : %+v", m.data)
 }
+
+//GetRefData get reference of data; WARNING can manipulate data externally
+func (m *Mapper) GetRefData() *map[string]interface{} {
+	return &m.data
+}
