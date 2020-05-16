@@ -2,6 +2,7 @@ package simplestorage
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"sync"
 )
@@ -42,13 +43,18 @@ func (m *Mapper) Get(key string) interface{} {
 		return errors.New("invalid key")
 	}
 
+	if m.IsPrintLog {
+		log.Println(key, " : ", m.data[key])
+	}
+
 	//data not set before
 	if m.data[key] == nil {
 		return errors.New("empty data")
 	}
 
-	if m.IsPrintLog {
-		log.Println(key, " : ", m.data[key])
-	}
 	return m.data[key]
+}
+
+func (m *Mapper) PrintData() {
+	fmt.Printf("data : %+v", m.data)
 }
