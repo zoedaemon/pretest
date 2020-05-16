@@ -11,7 +11,7 @@ import (
 	"github.com/zoedaemon/pretest/simplestorage"
 )
 
-//define data json payload in body
+//Data define data json payload in body
 type Data struct {
 	ID      string `json:"id,omitempty"`
 	Message string `json:"message"`
