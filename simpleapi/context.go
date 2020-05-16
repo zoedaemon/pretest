@@ -4,8 +4,6 @@ import "net/http"
 
 //Context hold unique request and response for manipulating directly from user defined func
 type Context struct {
-	//DONE: should be private attributes, but need implement setter and getter,
-	//		for moment keep it simple
 	request  *http.Request
 	response http.ResponseWriter
 }

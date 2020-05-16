@@ -20,7 +20,7 @@ type (
 		Context
 
 		//e.g. map objects of files config, database connection, redis, etc
-		CustomData interface{}
+		customData interface{}
 	}
 
 	//Response that should be pass from user defined function HandlerFunc
@@ -105,4 +105,17 @@ func generalMethod(s *Scope, method string, path string, handler HandlerFunc) {
 **/
 func (s *Scope) Serve(host string) {
 	log.Panic(http.ListenAndServe(host, s.Server))
+}
+
+/*SetCustomData for user defined data that can be accessed from any handler
+	that defined with GetMethod and PostMethod
+* host 	: define your host for example localhost:8080
+**/
+func (s *Scope) SetCustomData(data interface{}) {
+	s.customData = data
+}
+
+//GetCustomData get user defined data
+func (s *Scope) GetCustomData() interface{} {
+	return s.customData
 }
