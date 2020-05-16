@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//Put data to mapper
 func TestMapper(t *testing.T) {
 	assert := assert.New(t)
 
@@ -14,8 +13,21 @@ func TestMapper(t *testing.T) {
 	Key := "IAmAKey"
 	Data := "IAmData"
 
+	//Put data in mapper
 	DataMap.Put(Key, Data)
-	// assert equality
-	assert.Equal(DataMap.Get(Key), Data, "Data Not Equal")
 
+	// assert error Put invalid key
+	err, _ := DataMap.Put("", "").(error)
+	assert.Equal("invalid key", err.Error(), "must be return 'invalid key'")
+
+	// assert equality
+	assert.Equal(Data, DataMap.Get(Key), "Data should be equal")
+
+	// assert error Get invalid key
+	err, _ = DataMap.Get("").(error)
+	assert.Equal("invalid key", err.Error(), "must be return 'invalid key'")
+
+	// assert error Get empty data
+	err, _ = DataMap.Get("fakekey :)").(error)
+	assert.Equal("empty data", err.Error(), "suppose to be 'empty data'")
 }

@@ -1,16 +1,21 @@
 package simplestorage
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 //Mapper hold data map with key is string and data is general interface
 type Mapper struct {
-	data map[string]interface{}
+	data       map[string]interface{}
+	IsPrintLog bool
 }
 
 //NewMapper instance
 func NewMapper() *Mapper {
 	return &Mapper{
-		data: make(map[string]interface{}),
+		data:       make(map[string]interface{}),
+		IsPrintLog: false,
 	}
 }
 
@@ -35,5 +40,8 @@ func (m *Mapper) Get(key string) interface{} {
 		return errors.New("empty data")
 	}
 
+	if m.IsPrintLog {
+		log.Println(key, " : ", m.data[key])
+	}
 	return m.data[key]
 }
