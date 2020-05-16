@@ -14,5 +14,9 @@ func RegisterHandlers() (SimpleAPI *simpleapi.Scope) {
 	SimpleAPI.GetMethod("/", Root)
 	SimpleAPI.PostMethod("/messages/send", SendingMessage)
 
+	//NOTE: at moment key id get from query parameters not from path parameters
+	//		i.e.  /messages/get?key={id} not /messages/get/{id}
+	SimpleAPI.GetMethod("/messages/get", GetMessage)
+
 	return SimpleAPI
 }
