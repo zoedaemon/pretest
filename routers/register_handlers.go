@@ -18,7 +18,14 @@ func RegisterHandlers() (SimpleAPI *simpleapi.Scope) {
 	//		i.e.  /messages/get?key={id} not /messages/get/{id}
 	SimpleAPI.GetMethod("/messages/get", GetMessage)
 
+	//get all message
 	SimpleAPI.GetMethod("/messages", GetAllMessage)
+
+	//websocket connection echoing sent message
+	SimpleAPI.WebsocketMethod("/ws/messages/echo", WebsocketMessage)
+	// For Future
+	// SimpleAPI.WebsocketMethod("/ws/messages/writing", WebsocketMessage)
+	// SimpleAPI.WebsocketMethod("/ws/messages/reading", WebsocketMessage)
 
 	return SimpleAPI
 }

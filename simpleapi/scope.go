@@ -4,12 +4,17 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/websocket"
 )
 
 type (
 
 	//HandlerFunc SimpleAPI implementation
 	HandlerFunc func(Scope) *Response
+
+	//HandlerWebsocketFunc SimpleAPI implementation + gorilla/websocket package
+	HandlerWebsocketFunc func(Scope, *websocket.Conn) error
 
 	//Scope SimpleAPI all attributes / field
 	Scope struct {
@@ -21,6 +26,8 @@ type (
 
 		//e.g. map objects of files config, database connection, redis, etc
 		customData interface{}
+
+		Upgrader websocket.Upgrader
 	}
 
 	//Response that should be pass from user defined function HandlerFunc
@@ -38,6 +45,14 @@ const RequestLogFormat = "\n\tHost : %s \n\tPath : %s\n\tResponse: %s"
 func New() *Scope {
 	return &Scope{
 		Server: http.NewServeMux(),
+		Upgrader: websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin: func(r *http.Request) bool {
+				//allow ws connection, CONCERN: use wss if use domain name, don't use this option
+				return true
+			},
+		},
 	}
 }
 
@@ -97,6 +112,47 @@ func generalMethod(s *Scope, method string, path string, handler HandlerFunc) {
 			//Print log
 			log.Printf(RequestLogFormat, request.Host, request.URL.Path, Data)
 		}
+	})
+}
+
+/*WebsocketMethod register handler for general methods used in internal in this package
+* path 		: endpoints path
+* handler	: user defined function for handling response current endpoints
+**/
+func (s *Scope) WebsocketMethod(path string, handler HandlerWebsocketFunc) {
+	//handle response from http lib
+	s.Server.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
+
+		s.SetContext(writer, request)
+
+		//upgrate to websocket protocol
+		ws, err := s.Upgrader.Upgrade(writer, request, nil)
+		if err != nil {
+			log.Printf("error : " + err.Error())
+			return
+		}
+		defer func() {
+			ws.Close()
+		}()
+
+		//Print log
+		log.Printf("Websocket connection started...")
+
+		for {
+			//execute user defined function for websocket
+			err = handler(*s, ws)
+
+			//stop it if return value exist (error happen might be)
+			if err != nil {
+				break
+			}
+
+			//Print log
+			log.Printf("some message has been sent/receive")
+		}
+		//Print log
+		log.Printf("Websocket disconnected...bye...")
+
 	})
 }
 
