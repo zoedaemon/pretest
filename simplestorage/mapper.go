@@ -55,6 +55,7 @@ func (m *Mapper) Get(key string) interface{} {
 	return m.data[key]
 }
 
+//PrintData show standard fmt output for current data
 func (m *Mapper) PrintData() {
 	fmt.Printf("data : %+v", m.data)
 }
