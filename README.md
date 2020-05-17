@@ -1,4 +1,5 @@
 # Simple API
+[![Go Report Card](https://goreportcard.com/badge/github.com/zoedaemon/pretest?style=flat-square)](https://goreportcard.com/report/github.com/zoedaemon/pretest)
 ## Build / Run
 Make sure you have installed go correctly
 ```
