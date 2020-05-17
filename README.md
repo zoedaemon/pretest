@@ -1,4 +1,6 @@
 # Simple API
+[![Build Status](https://travis-ci.org/zoedaemon/pretest.svg?branch=master)](https://travis-ci.org/github/zoedaemon/pretest)
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/zoedaemon/pretest?style=flat-square)](https://goreportcard.com/report/github.com/zoedaemon/pretest)
 ## Build / Run
 Make sure you have installed go correctly
