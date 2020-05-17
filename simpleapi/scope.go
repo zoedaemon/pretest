@@ -14,7 +14,7 @@ type (
 	HandlerFunc func(Scope) *Response
 
 	//HandlerWebsocketFunc SimpleAPI implementation + gorilla/websocket package
-	HandlerWebsocketFunc func(Scope, *websocket.Conn) error
+	HandlerWebsocketFunc func(Scope, *websocket.Conn) ([]byte, error)
 
 	//Scope SimpleAPI all attributes / field
 	Scope struct {
@@ -140,7 +140,7 @@ func (s *Scope) WebsocketMethod(path string, handler HandlerWebsocketFunc) {
 
 		for {
 			//execute user defined function for websocket
-			err = handler(*s, ws)
+			msg, err := handler(*s, ws)
 
 			//stop it if return value exist (error happen might be)
 			if err != nil {
@@ -148,7 +148,7 @@ func (s *Scope) WebsocketMethod(path string, handler HandlerWebsocketFunc) {
 			}
 
 			//Print log
-			log.Printf("some message has been sent/receive")
+			log.Printf("some message has been receive : " + string(msg))
 		}
 		//Print log
 		log.Printf("Websocket disconnected...bye...")
