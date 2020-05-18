@@ -24,7 +24,7 @@ func RegisterHandlers() (SimpleAPI *simpleapi.Scope) {
 	//websocket connection echoing sent message
 	SimpleAPI.WebsocketMethod("/ws/messages/echo", WebsocketMessage)
 	// For Future
-	// SimpleAPI.WebsocketMethod("/ws/messages/writing", WebsocketMessage)
+	SimpleAPI.WebsocketMethod("/ws/messages/writer", WebsocketMessageWriter)
 	// SimpleAPI.WebsocketMethod("/ws/messages/reading", WebsocketMessage)
 
 	return SimpleAPI

@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/zoedaemon/pretest/simpleapi"
@@ -13,6 +14,7 @@ func GetAllMessage(scope simpleapi.Scope) *simpleapi.Response {
 	//new data instance
 	data := []Data{}
 
+	fmt.Printf("scope.GetCustomData() = %+v ", scope.GetCustomData())
 	//get custom data that hold Mapper
 	CData := scope.GetCustomData().(*simplestorage.Mapper)
 	DataMaps := CData.GetRefData()
@@ -28,7 +30,19 @@ func GetAllMessage(scope simpleapi.Scope) *simpleapi.Response {
 	for key, val := range *DataMaps {
 		singleData := Data{}
 		singleData.ID = key
-		singleData.Message = val.(string)
+		//check data is must string or []byte
+		switch val.(type) {
+		case string:
+			singleData.Message = val.(string)
+			break
+
+		case []byte:
+			bytes := val.([]byte)
+			singleData.Message = string(bytes)
+			break
+		default:
+			continue
+		}
 		data = append(data, singleData)
 	}
 
